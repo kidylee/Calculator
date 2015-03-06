@@ -9,13 +9,13 @@
 import Foundation
 
 
-class CalculatorBrain
+class CalculatorBrain : Printable
 {
     private enum Op: Printable{
         case operand(Double)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double,Double) -> Double)
-        
+        case NullaryOperation(String, Double)
         var description: String {
             get{
                 switch self{
@@ -25,7 +25,10 @@ class CalculatorBrain
                     return "\(symbol)"
                 case .BinaryOperation(let symbol, _):
                     return "\(symbol)"
-
+                case .NullaryOperation(let symbol, _):
+                    return "\(symbol)"
+                    
+                    
                 }
             }
         }
@@ -40,13 +43,16 @@ class CalculatorBrain
     init(){
         func learnOp(op: Op){
             knownOps[op.description] = op
-
+            
         }
         learnOp(Op.BinaryOperation("×", *))
         learnOp(Op.BinaryOperation("÷"){ $1 / $0 })
         learnOp(Op.BinaryOperation("+", +))
         learnOp(Op.BinaryOperation("−", -))
         learnOp(Op.UnaryOperation("√",sqrt))
+        learnOp(Op.UnaryOperation("SIN", sin))
+        learnOp(Op.UnaryOperation("COS", cos))
+        learnOp(Op.NullaryOperation("π", M_PI))
         
     }
     
@@ -70,6 +76,8 @@ class CalculatorBrain
                         return (operation(operand1, operand2), op2Evaluation.remainingOps)
                     }
                 }
+            case .NullaryOperation(_, let operation):
+                return (operation,remainingOps)
             }
         }
         return (nil,ops)
@@ -92,5 +100,11 @@ class CalculatorBrain
         }
         return evaluate()
         
+    }
+    
+    var description : String{
+        get{
+            return " ".join(opStack.map{"\($0)"})
+        }
     }
 }
