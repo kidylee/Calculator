@@ -9,7 +9,7 @@
 import Foundation
 
 
-class CalculatorBrain : Printable
+class CalculatorBrain
 {
     private enum Op: Printable{
         case operand(Double)
@@ -53,6 +53,9 @@ class CalculatorBrain : Printable
         learnOp(Op.UnaryOperation("SIN", sin))
         learnOp(Op.UnaryOperation("COS", cos))
         learnOp(Op.NullaryOperation("π", M_PI))
+        learnOp(Op.UnaryOperation("+/-"){ -$0})
+
+        
         
     }
     
@@ -104,7 +107,10 @@ class CalculatorBrain : Printable
     
     var description : String{
         get{
-            return " ".join(opStack.map{"\($0)"})
+            return " ".join(opStack.map{
+                "\($0)"})
         }
     }
+    
+
 }

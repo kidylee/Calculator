@@ -35,13 +35,13 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber{
             enter()
         }
         if let operation = sender.currentTitle{
             if let result = brain.performOperation(operation){
                 displayValue = result
+                history.text = "\(history.text!) = "
             } else {
                 displayValue = 0
             }
@@ -52,7 +52,7 @@ class ViewController: UIViewController {
     @IBAction func enter() {
         
         userIsInTheMiddleOfTypingANumber = false
-        if let result = brain.pushOperand(displayValue){
+        if let result = brain.pushOperand(displayValue!){
             displayValue = result
         }else{
             displayValue = 0
@@ -64,19 +64,50 @@ class ViewController: UIViewController {
         displayValue = 0
         
     }
+
     
-    var displayValue: Double {
-        get{
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
-        }
-        
-        set{
-            display.text = "\(newValue)"
+    @IBAction func delete() {
+      let text = display.text!
+        if countElements(text) > 1 {
+            display.text = dropLast(text)
+        }else{
             userIsInTheMiddleOfTypingANumber = false
-            history.text = brain.description
+            display.text = "0"
         }
     }
     
+    @IBAction func switchSign(sender: UIButton) {
+        let text = display.text!
+        if userIsInTheMiddleOfTypingANumber {
+            var signed = String(format: "%.0f", -displayValue!)
+            display.text = "\(signed)"
+        }else{
+            
+        }
+    }
+    
+    var displayValue: Double? {
+        get{
+            if let numberValue = NSNumberFormatter().numberFromString(display.text!){
+                    return numberValue.doubleValue
+            }
+            return nil
+            
+        }
+        
+        set{
+            if let value = newValue  {
+                let value = String(format:"%.0f", value)
+                display.text = "\(value)"
+            }else{
+                display.text = "0"
+            }
+            history.text = brain.description
+
+            userIsInTheMiddleOfTypingANumber = false
+
+        }
+    }
 
     
 }
