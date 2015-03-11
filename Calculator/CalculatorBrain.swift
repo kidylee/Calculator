@@ -12,14 +12,14 @@ import Foundation
 class CalculatorBrain
 {
     private enum Op: Printable{
-        case operand(Double)
+        case Operand(Double)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double,Double) -> Double)
         case NullaryOperation(String, Double)
         var description: String {
             get{
                 switch self{
-                case .operand(let operand):
+                case .Operand(let operand):
                     return "\(operand)"
                 case .UnaryOperation(let symbol, _):
                     return "\(symbol)"
@@ -59,12 +59,31 @@ class CalculatorBrain
         
     }
     
+    var program:AnyObject{ //guarant to be a PropertyList
+        get{
+            return opStack.map{$0.description}
+        }
+        set{
+            if let opSymbols = newValue as? Array<String>{
+                var newOpStack = [Op]()
+                for opSymbol in opSymbols{
+                    if let op = knownOps[opSymbol]{
+                        newOpStack.append(op)
+                    }else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue{
+                        newOpStack.append(.Operand(operand))
+                    }
+                }
+                opStack = newOpStack
+            }
+        }
+    }
+    
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]){
         if !ops.isEmpty{
             var remainingOps = ops
             let op = remainingOps.removeLast()
             switch op {
-            case .operand(let operand):
+            case .Operand(let operand):
                 return (operand,remainingOps)
             case .UnaryOperation(_, let operation):
                 let operandEvaluation = evaluate(remainingOps)
@@ -93,7 +112,7 @@ class CalculatorBrain
     }
     
     func pushOperand(operand: Double) -> Double? {
-        opStack.append(Op.operand(operand))
+        opStack.append(Op.Operand(operand))
         return evaluate()
     }
     
