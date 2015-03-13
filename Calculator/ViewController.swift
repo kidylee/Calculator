@@ -61,7 +61,7 @@ class ViewController: UIViewController {
     
     @IBAction func clear() {
         brain = CalculatorBrain()
-        displayValue = 0
+        display.text = "0"
         
     }
 
@@ -97,7 +97,6 @@ class ViewController: UIViewController {
         
         set{
             if let value = newValue  {
-                let value = String(format:"%.0f", value)
                 display.text = "\(value)"
             }else{
                 display.text = "0"
